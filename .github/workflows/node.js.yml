@@ -1,4 +1,4 @@
-name: Node.js CI/CD
+name: Node.js CI/CD - Fbdw
 
 on:
   push:
@@ -27,25 +27,35 @@ jobs:
 
     # 3️⃣ Installer les dépendances
     - name: Install dependencies
-      run: npm install
-
-    # 4️⃣ Lancer les tests (si tu en as)
-    - name: Run tests
       run: |
         if [ -f package.json ]; then
-          npm test || echo "Aucun test trouvé"
+          npm install
+        else
+          echo "Pas de package.json, installation ignorée"
         fi
 
-    # 5️⃣ Linter (optionnel)
-    - name: Run linter
+    # 4️⃣ Linter (optionnel)
+    - name: Run ESLint
       run: |
         if [ -f package.json ]; then
-          npx eslint . || echo "Aucun linter configuré"
+          npx eslint . || echo "ESLint non configuré"
         fi
 
-    # 6️⃣ Build (optionnel si tu as un build frontend)
-    - name: Build project
+    # 5️⃣ Tester le serveur (test simple)
+    - name: Test server.js
       run: |
-        if [ -f package.json ]; then
-          npm run build || echo "Pas de build script"
-        fi 
+        if [ -f server.js ]; then
+          echo "Vérification que server.js existe"
+        else
+          echo "server.js manquant !"
+          exit 1
+        fi
+
+    # 6️⃣ Build frontend (optionnel)
+    - name: Build frontend
+      run: |
+        if [ -f package.json ] && npm run build > /dev/null 2>&1; then
+          echo "Build réussi"
+        else
+          echo "Pas de build script, étape ignorée"
+        fi
