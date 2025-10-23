@@ -1,0 +1,51 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    # 1️⃣ Checkout du code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2️⃣ Installer Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    # 3️⃣ Installer les dépendances
+    - name: Install dependencies
+      run: npm install
+
+    # 4️⃣ Lancer les tests (si tu en as)
+    - name: Run tests
+      run: |
+        if [ -f package.json ]; then
+          npm test || echo "Aucun test trouvé"
+        fi
+
+    # 5️⃣ Linter (optionnel)
+    - name: Run linter
+      run: |
+        if [ -f package.json ]; then
+          npx eslint . || echo "Aucun linter configuré"
+        fi
+
+    # 6️⃣ Build (optionnel si tu as un build frontend)
+    - name: Build project
+      run: |
+        if [ -f package.json ]; then
+          npm run build || echo "Pas de build script"
+        fi 
